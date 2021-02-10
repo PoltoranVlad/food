@@ -308,6 +308,7 @@ window.addEventListener('DOMContentLoaded', function () {
     ////////////////////////////slider//////////////////////////
 
     const slides = document.querySelectorAll('.offer__slide'),
+        slider = document.querySelector('.offer__slider'),
         currentSlide = document.getElementById('current'),
         totalSlide = document.getElementById('total'),
         prevSlide = document.querySelector('.offer__slider-prev'),
@@ -315,6 +316,7 @@ window.addEventListener('DOMContentLoaded', function () {
         sliderWrapper = document.querySelector('.offer__slider-wrapper'),
         sliderField = document.querySelector('.offer_slider-inner'),
         width = window.getComputedStyle(sliderWrapper).width;
+
 
     let sliderIndex = 1;
     let offset = 0;
@@ -336,6 +338,27 @@ window.addEventListener('DOMContentLoaded', function () {
     slides.forEach(slide => {
         slide.style.width = width;
     });
+    slider.style.position = 'relative';
+
+    const indicators = document.createElement('ol');
+    indicators.classList.add('carousel-indicators');
+    slider.append(indicators);
+
+    const dots = [];
+
+    for(let i = 0; i<slides.length; i++){
+
+        const dot = document.createElement('li');
+        dot.setAttribute('data-slide-to', i+1);
+        dot.classList.add('dot');
+
+        if(i == 0){
+            dot.classList.add('slider-active');
+        }
+
+        indicators.append(dot);
+        dots.push(dot);
+    }
 
     nextSlide.addEventListener('click', ()=>{
         if(offset == +width.slice(0, width.length - 2) * (slides.length - 1) ){
@@ -350,12 +373,14 @@ window.addEventListener('DOMContentLoaded', function () {
         }else {
             sliderIndex++;
         }
+
         if(slides.length <10){
             currentSlide.textContent = `0${sliderIndex}`;
         }else{
             currentSlide.textContent = sliderIndex;
         }
-
+        dots.forEach(dot => dot.classList.remove('slider-active'));
+        dots[sliderIndex - 1].classList.add('slider-active');
     });
 
     prevSlide.addEventListener('click', ()=>{
@@ -377,5 +402,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }else{
             currentSlide.textContent = sliderIndex;
         }
+        dots.forEach(dot => dot.classList.remove('slider-active'));
+        dots[sliderIndex - 1].classList.add('slider-active');
     });
 });
