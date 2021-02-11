@@ -128,8 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    const modalTimerId = setTimeout(openModal, 300000);
-    // Изменил значение, чтобы не отвлекало
+    const modalTimerId = setTimeout(openModal, 900000);
 
     function showModalByScroll() {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -138,8 +137,6 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     }
     window.addEventListener('scroll', showModalByScroll);
-
-    // Используем классы для создание карточек меню
 
     class MenuCard {
         constructor(src, alt, title, descr, price, parentSelector, ...classes) {
@@ -305,7 +302,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }, 4000);
     }
 
-    ////////////////////////////slider//////////////////////////
+    //Slider
 
     const slides = document.querySelectorAll('.offer__slide'),
         slider = document.querySelector('.offer__slider'),
@@ -320,16 +317,30 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let sliderIndex = 1;
     let offset = 0;
+    const removeDigits = /\D/g;
 
-    if(slides.length < 10){
+    function writeCurrentSlide() {
+        if (slides.length < 10) {
+            currentSlide.textContent = `0${sliderIndex}`;
+        } else {
+            currentSlide.textContent = sliderIndex;
+        }
+    }
+
+    function navigateMark() {
+        dots.forEach(dot => dot.classList.remove('slider-active'));
+        dots[sliderIndex - 1].classList.add('slider-active');
+    }
+
+    if (slides.length < 10) {
         totalSlide.textContent = `0${slides.length}`;
         currentSlide.textContent = `0${sliderIndex}`;
-    }else {
+    } else {
         totalSlide.textContent = slides.length;
         currentSlide.textContent = sliderIndex;
     }
 
-    sliderField.style.width = 100 * slides.length+ '%';
+    sliderField.style.width = 100 * slides.length + '%';
     sliderField.style.display = 'flex';
     sliderField.style.transition = '0.5s all';
 
@@ -346,13 +357,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const dots = [];
 
-    for(let i = 0; i<slides.length; i++){
+    for (let i = 0; i < slides.length; i++) {
 
         const dot = document.createElement('li');
-        dot.setAttribute('data-slide-to', i+1);
+        dot.setAttribute('data-slide-to', i + 1);
         dot.classList.add('dot');
 
-        if(i == 0){
+        if (i == 0) {
             dot.classList.add('slider-active');
         }
 
@@ -360,49 +371,53 @@ window.addEventListener('DOMContentLoaded', function () {
         dots.push(dot);
     }
 
-    nextSlide.addEventListener('click', ()=>{
-        if(offset == +width.slice(0, width.length - 2) * (slides.length - 1) ){
+    dots.forEach((dot) => {
+        dot.addEventListener('click', (e) => {
+            const slideTo = e.target.getAttribute('data-slide-to');
+            sliderIndex = slideTo;
+
+            offset = +width.replace(removeDigits, '') * (slideTo - 1);
+            sliderField.style.transform = `translateX(-${offset}px)`;
+
+            navigateMark();
+            writeCurrentSlide();
+        });
+    });
+
+    nextSlide.addEventListener('click', () => {
+        if (offset == +width.replace(removeDigits, '') * (slides.length - 1)) {
             offset = 0;
-        }else{
-            offset += +width.slice(0, width.length - 2);
+        } else {
+            offset += +width.replace(removeDigits, '');
         }
         sliderField.style.transform = `translateX(-${offset}px)`;
 
-        if(sliderIndex == slides.length){
+        if (sliderIndex == slides.length) {
             sliderIndex = 1;
-        }else {
+        } else {
             sliderIndex++;
         }
 
-        if(slides.length <10){
-            currentSlide.textContent = `0${sliderIndex}`;
-        }else{
-            currentSlide.textContent = sliderIndex;
-        }
-        dots.forEach(dot => dot.classList.remove('slider-active'));
-        dots[sliderIndex - 1].classList.add('slider-active');
+        writeCurrentSlide();
+        navigateMark();
     });
 
-    prevSlide.addEventListener('click', ()=>{
-        if(offset == 0){
-            offset = +width.slice(0, width.length - 2) * (slides.length - 1);
-        }else{
-            offset -= +width.slice(0, width.length - 2);
+    prevSlide.addEventListener('click', () => {
+        if (offset == 0) {
+            offset = +width.replace(removeDigits, '') * (slides.length - 1);
+        } else {
+            offset -= +width.replace(removeDigits, '');
         }
         sliderField.style.transform = `translateX(-${offset}px)`;
 
-        if(sliderIndex == 1){
+        if (sliderIndex == 1) {
             sliderIndex = slides.length;
-        }else {
+        } else {
             sliderIndex--;
         }
 
-        if(slides.length <10){
-            currentSlide.textContent = `0${sliderIndex}`;
-        }else{
-            currentSlide.textContent = sliderIndex;
-        }
-        dots.forEach(dot => dot.classList.remove('slider-active'));
-        dots[sliderIndex - 1].classList.add('slider-active');
+        writeCurrentSlide();
+        navigateMark();
     });
+
 });
