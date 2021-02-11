@@ -420,4 +420,70 @@ window.addEventListener('DOMContentLoaded', function () {
         navigateMark();
     });
 
+    //calories
+
+    const result = document.querySelector('.calculating__result span');
+    let weight, age, height, ratio, sex;
+
+    function calcResault() {
+        if (!sex || !height || !weight || !age || !ratio) {
+            result.textContent = 'нет';
+            return;
+        }
+        if (sex === 'female') {
+            result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+        } else {
+            result.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+        }
+    }
+    calcResault();
+
+
+    function getActiveData(selector) {
+        let input = document.querySelector(selector);
+        input.addEventListener('input', () => {
+
+            switch (input.getAttribute('id')) {
+                case "height":
+                    height = +input.value;
+                    break;
+                case "weight":
+                    weight = +input.value;
+                    break;
+                case "age":
+                    age = +input.value;
+                    break;
+            }
+
+            calcResault();
+        });
+    }
+
+    function passiveData(parentSelector, calcActive) {
+        const elements = document.querySelectorAll(`${parentSelector} div`);
+
+        elements.forEach(elem => {
+            elem.addEventListener('click', (e) => {
+                if (e.target.getAttribute('data-ratio')) {
+                    ratio = +e.target.getAttribute('data-ratio');
+                } else {
+                    sex = e.target.getAttribute('id');
+                }
+                elements.forEach(elem => {
+                    elem.classList.remove(calcActive);
+                });
+                e.target.classList.add(calcActive);
+                calcResault();
+            });
+        });
+
+    }
+
+    passiveData('#gender', 'calculating__choose-item_active');
+    passiveData('.calculating__choose_big', 'calculating__choose-item_active');
+
+    getActiveData('#height');
+    getActiveData('#weight');
+    getActiveData('#age');
+
 });
